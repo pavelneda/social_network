@@ -1,5 +1,5 @@
 <script>
-import {Link, useForm} from "@inertiajs/vue3";
+import {Link, router, useForm} from "@inertiajs/vue3";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
@@ -16,24 +16,44 @@ export default {
             form: useForm({
                 title: '',
                 content: '',
+                image_id: null,
             }),
 
-            formImage: useForm({
-                image: null,
-            }),
+            image: null,
+            imageErrors: null,
+
         }
     },
 
     methods: {
-        setFile(){
+        setFile() {
             this.$refs.image.click();
         },
 
-        storeFile(e){
-            this.formImage.image = e.target.files[0];
-            this.formImage.post(route('postImage.store'))
+        storeFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            axios.post(route('postImage.store'), formData)
+                .then(res => {
+                    this.image = res.data;
+                    this.imageErrors = null;
+                })
+                .catch(err => {
+                    this.imageErrors = err.response.data.message;
+                })
         },
-    }
+    },
+
+    watch: {
+        image(newImage, oldImage) {
+            const imageId = newImage ? newImage.id : null;
+            this.form.image_id = imageId;
+        }
+    },
 }
 </script>
 
@@ -48,7 +68,10 @@ export default {
         <form
             @submit.prevent="form.post(route('post.store'),{
                               preserveScroll: true,
-                              onSuccess: () => form.reset(),
+                              onSuccess: () => {
+                                  form.reset();
+                                  image = null;
+                              },
                             })"
             class="mt-6 space-y-6"
         >
@@ -85,8 +108,14 @@ export default {
             <div>
                 <InputLabel for="image" value="Image"/>
                 <input @change="storeFile" type="file" name="image" class="hidden" ref="image">
-                <SecondaryButton @click.prevent="setFile">Load</SecondaryButton>
-                <InputError class="mt-2" :message="formImage.errors.image"/>
+                <div class="flex">
+                    <SecondaryButton @click.prevent="setFile">Load</SecondaryButton>
+                    <SecondaryButton @click.prevent="this.image = null" class="ml-2 bg-red-500">Cansel</SecondaryButton>
+                </div>
+                <InputError class="mt-2" :message="imageErrors"/>
+                <div v-if="image" class="mt-3">
+                    <img :src="image.url" alt="preview_image" class="rounded-2xl">
+                </div>
             </div>
 
 

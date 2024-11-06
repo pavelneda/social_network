@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PostImage\StoreRequest;
 use App\Http\Resources\PostImage\PostImageResource;
 use App\Models\PostImage;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -20,6 +21,6 @@ class PostImageController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        return Inertia::render('post.create', ['image' => PostImageResource::make($image)]);
+        return PostImageResource::make($image)->resolve();
     }
 }
