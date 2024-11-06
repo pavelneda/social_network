@@ -31,6 +31,7 @@ export default {
         },
 
         storeFile(e) {
+            console.log(11111);
             const file = e.target.files[0];
             if (!file) return;
 
@@ -39,6 +40,7 @@ export default {
 
             axios.post(route('postImage.store'), formData)
                 .then(res => {
+                    console.log(res.data);
                     this.image = res.data;
                     this.imageErrors = null;
                 })
@@ -107,10 +109,10 @@ export default {
 
             <div>
                 <InputLabel for="image" value="Image"/>
-                <input @change="storeFile" type="file" name="image" class="hidden" ref="image">
+                <input @change="storeFile" @click="$event.target.value=''" type="file" name="image" class="hidden" ref="image">
                 <div class="flex">
                     <SecondaryButton @click.prevent="setFile">Load</SecondaryButton>
-                    <SecondaryButton @click.prevent="this.image = null" class="ml-2 bg-red-500">Cansel</SecondaryButton>
+                    <SecondaryButton @click.prevent="this.image = null" v-if="image" class="ml-2 !bg-red-500">Cansel</SecondaryButton>
                 </div>
                 <InputError class="mt-2" :message="imageErrors"/>
                 <div v-if="image" class="mt-3">

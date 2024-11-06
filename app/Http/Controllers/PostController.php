@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Post\StoreRequest;
+use App\Http\Resources\Post\PostResource;
 use App\Models\Post;
 use App\Models\PostImage;
 use Illuminate\Http\Request;
@@ -13,6 +14,12 @@ use function Symfony\Component\Translation\t;
 
 class PostController extends Controller
 {
+
+    public function index()
+    {
+        $posts = Post::where('user_id', auth()->id())->latest()->get();
+        return Inertia::render('Post/Index', ['posts' => PostResource::collection($posts)]);
+    }
     public function create()
     {
         return Inertia::render('Post/Create');
@@ -30,6 +37,7 @@ class PostController extends Controller
             DB::beginTransaction();
             $post = Post::create($data);
             $this->processImage($post, $imageId);
+            PostImageController::clearStorage();
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();

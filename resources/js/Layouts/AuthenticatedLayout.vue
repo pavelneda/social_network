@@ -45,6 +45,18 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Create post
                                 </NavLink>
+                                <NavLink
+                                    :href="route('post.index')"
+                                    :active="route().current('post.index')"
+                                >
+                                    My posts
+                                </NavLink>
+                                <NavLink
+                                    :href="route('user.index')"
+                                    :active="route().current('user.index')"
+                                >
+                                    Users
+                                </NavLink>
                             </div>
                         </div>
 

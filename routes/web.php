@@ -3,6 +3,7 @@
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostImageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,6 +29,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/create-post', [PostController::class, 'create'])->name('post.create');
     Route::post('/create-post', [PostController::class, 'store'])->name('post.store');
     Route::post('/create-post-image', [PostImageController::class, 'store'])->name('postImage.store');
+
+    Route::get('/posts', [PostController::class, 'index'])->name('post.index');
+
+    Route::get('/users', [UserController::class, 'index'])->name('user.index');
+    Route::get('/users/{user}/posts', [UserController::class, 'posts'])->name('user.posts.index');
 });
 
 require __DIR__.'/auth.php';

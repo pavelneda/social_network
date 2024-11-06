@@ -23,4 +23,16 @@ class PostImageController extends Controller
 
         return PostImageResource::make($image)->resolve();
     }
+
+    public static function clearStorage()
+    {
+        $images = PostImage::where('user_id', auth()->id())
+            ->where('status', '!=', true)
+            ->get();
+
+        foreach ($images as $image) {
+            Storage::disk('public')->delete($image->path);
+            $image->delete();
+        }
+    }
 }
