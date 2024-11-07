@@ -33,7 +33,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts', [PostController::class, 'index'])->name('post.index');
 
     Route::get('/users', [UserController::class, 'index'])->name('user.index');
+    Route::get('/users/feed', [UserController::class, 'feed'])->name('user.feed');
     Route::get('/users/{user}/posts', [UserController::class, 'posts'])->name('user.posts.index');
+    Route::patch('/users/{user}/follow', [UserController::class, 'follow'])->name('user.follow');
 });
 
 require __DIR__.'/auth.php';

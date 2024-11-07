@@ -40,7 +40,6 @@ export default {
 
             axios.post(route('postImage.store'), formData)
                 .then(res => {
-                    console.log(res.data);
                     this.image = res.data;
                     this.imageErrors = null;
                 })

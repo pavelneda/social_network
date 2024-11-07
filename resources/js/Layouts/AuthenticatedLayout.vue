@@ -57,6 +57,12 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Users
                                 </NavLink>
+                                <NavLink
+                                    :href="route('user.feed')"
+                                    :active="route().current('user.feed')"
+                                >
+                                    Feed
+                                </NavLink>
                             </div>
                         </div>
 

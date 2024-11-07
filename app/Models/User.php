@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class, 'user_id', 'id')->orderBy('created_at', 'desc');
     }
+
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, 'subscriber_followings', 'subscriber_id', 'following_id');
+    }
 }
