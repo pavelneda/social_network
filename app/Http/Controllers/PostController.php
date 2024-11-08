@@ -18,6 +18,12 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::where('user_id', auth()->id())->latest()->get();
+        $likedPostsIds = auth()->user()->likedPosts()->pluck('post_id')->toArray();
+
+        foreach ($posts as $post) {
+            if (in_array($post->id, $likedPostsIds)) $post->is_liked = true;
+        }
+
         return Inertia::render('Post/Index', ['posts' => PostResource::collection($posts)]);
     }
     public function create()
@@ -57,4 +63,15 @@ class PostController extends Controller
             ]);
         }
     }
+
+    public function like(Post $post)
+    {
+        $res = auth()->user()->likedPosts()->toggle($post);
+        $data['is_liked'] = count($res['attached']) > 0;
+        $data['likes_count'] = $post->likedUsers()->count();
+
+        return $data;
+    }
+
+
 }

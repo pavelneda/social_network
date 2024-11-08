@@ -11,7 +11,7 @@ export default {
         Head, AuthenticatedLayout
     },
 
-    props: ['posts'],
+    props: ['posts', 'userName'],
 
 }
 </script>
@@ -24,7 +24,7 @@ export default {
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800"
             >
-                User posts
+                {{ userName ?? 'User' }} posts
             </h2>
         </template>
         <div class="py-12">

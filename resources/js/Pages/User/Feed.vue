@@ -11,7 +11,7 @@ export default {
         Head, AuthenticatedLayout
     },
 
-    props: ['posts'],
+    props: ['posts', 'auth'],
 
 }
 </script>
@@ -29,7 +29,7 @@ export default {
         </template>
         <div class="py-12">
             <div v-if="posts" class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                <Post v-for="post in posts.data" :post="post" />
+                <Post v-for="post in posts.data" :post="post" :auth="auth" />
             </div>
         </div>
     </AuthenticatedLayout>

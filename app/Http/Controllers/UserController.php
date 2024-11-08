@@ -19,7 +19,8 @@ class UserController extends Controller
         $followings = auth()->user()->followings()->get(['following_id'])->pluck('following_id')->toArray();
 
         foreach ($users as $user) {
-            in_array($user->id, $followings) ? $user['is_follow'] = true : $user['is_follow'] = false;
+            if (in_array($user->id, $followings))
+                $user['is_follow'] = true;
         }
 
         return Inertia::render('User/Index', ['users' => UserResource::collection($users)]);
@@ -27,16 +28,19 @@ class UserController extends Controller
 
     public function posts(User $user)
     {
-        $posts = PostResource::collection($user->posts);
-        return Inertia::render('User/Show', ['posts' => $posts]);
+        $posts = $this->postsIsLiked($user->posts);
+        return Inertia::render('User/Show', ['posts' => PostResource::collection($posts), 'userName' => $user->name]);
     }
 
     public function feed()
     {
-        $followingsIds = auth()->user()->followings()->get(['following_id'])->pluck('following_id')->toArray();
-        $posts = PostResource::collection(Post::whereIn('user_id', $followingsIds)->get());
+        $followingsIds = auth()->user()->followings()->pluck('following_id')->toArray();
+        $likedPostsIds = auth()->user()->likedPosts()->pluck('post_id')->toArray();
 
-        return Inertia::render('User/Feed', ['posts' => $posts]);
+        $posts = Post::whereIn('user_id', $followingsIds)
+            ->whereNotIn('id', $likedPostsIds)->latest()->get();
+
+        return Inertia::render('User/Feed', ['posts' => PostResource::collection($posts)]);
     }
 
     public function follow(User $user)
@@ -45,6 +49,17 @@ class UserController extends Controller
         $data['is_follow'] = count($res['attached']) > 0;
 
         return $data;
+    }
+
+    private function postsIsLiked($posts)
+    {
+        $likedPostsIds = auth()->user()->likedPosts()->pluck('post_id')->toArray();
+
+        foreach ($posts as $post) {
+            if (in_array($post->id, $likedPostsIds)) $post->is_liked = true;
+        }
+
+        return $posts;
     }
 
 }

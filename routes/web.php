@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/create-post-image', [PostImageController::class, 'store'])->name('postImage.store');
 
     Route::get('/posts', [PostController::class, 'index'])->name('post.index');
+    Route::patch('/posts/{post}/like', [PostController::class, 'like'])->name('post.like');
 
     Route::get('/users', [UserController::class, 'index'])->name('user.index');
     Route::get('/users/feed', [UserController::class, 'feed'])->name('user.feed');
