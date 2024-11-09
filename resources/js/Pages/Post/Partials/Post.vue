@@ -1,16 +1,22 @@
 <script>
-import CreatePostForm from "@/Pages/Post/Partials/CreatePostForm.vue";
+
 import RepostForm from "@/Pages/Post/Partials/RepostForm.vue";
+import CommentForm from "@/Pages/Post/Partials/CommentForm.vue";
+import CommentsList from "@/Pages/Post/Partials/CommentsList.vue";
 
 export default {
     name: "Post",
-    components: {RepostForm, CreatePostForm},
+    components: {CommentsList, CommentForm, RepostForm},
 
     props: ['post', 'auth'],
+    emits: ["getNewComment"],
 
     data() {
         return {
             is_reposted: false,
+            openCommentForm: false,
+            showComments: false,
+            comments: null,
         }
     },
 
@@ -26,9 +32,27 @@ export default {
         toggleRepostForm() {
             if (this.auth && this.auth.user.id !== this.post.user.id)
                 this.is_reposted = !this.is_reposted
+        },
+
+        getComments(){
+            axios.get(route('post.commentsList', {post: this.post.id}))
+                .then(res => {
+                    this.comments = res.data.data;
+                })
+        },
+
+        getNewComment(comment){
+            console.log(comment);
+            this.showComments = true;
         }
 
-    }
+    },
+
+    watch: {
+        showComments(newShowComments, oldShowComments) {
+            if (newShowComments) this.getComments();
+        }
+    },
 }
 </script>
 
@@ -50,7 +74,15 @@ export default {
         <p v-if="auth && auth.user.id !== post.user.id" class="text-sm">{{ post.user.name }}</p>
         <div class="flex items-center">
             <p class="text-gray-400 text-sm ">{{ post.date }}</p>
-            <div class="flex items-center ml-auto">
+            <p @click="openCommentForm = !openCommentForm"
+               class="ml-auto text-gray-400 text-sm mr-4 cursor-pointer hover:text-sky-500">
+                {{ openCommentForm ? 'Close' : 'Add comment' }}
+            </p>
+            <p @click="showComments = !showComments" v-if="post.comments_count > 0"
+               class="text-gray-400 text-sm mr-4 cursor-pointer hover:text-sky-500">
+                {{ showComments ? 'Close comments' : 'Show comments' }}
+            </p>
+            <div class="flex items-center">
                 <p class="text-gray-400 text-sm mr-3">{{ post.likes_count }}</p>
                 <svg @click="toggleLike(post)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke-width="1.5"
@@ -71,6 +103,8 @@ export default {
             </div>
         </div>
         <RepostForm v-if="is_reposted" :post_id="post.id" class="max-w-xl"/>
+        <CommentForm v-if="openCommentForm" :post_id="post.id"/>
+        <CommentsList v-if="comments && showComments" :comments="comments" @getNewComment="getNewComment"/>
     </div>
 </template>
 

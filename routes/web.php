@@ -33,6 +33,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts', [PostController::class, 'index'])->name('post.index');
     Route::patch('/posts/{post}/like', [PostController::class, 'like'])->name('post.like');
     Route::post('/posts/{post}/repost', [PostController::class, 'repost'])->name('post.repost');
+    Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('post.comment');
+    Route::get('/posts/{post}/comments-list', [PostController::class, 'commentsList'])->name('post.commentsList');
 
     Route::get('/users', [UserController::class, 'index'])->name('user.index');
     Route::get('/users/feed', [UserController::class, 'feed'])->name('user.feed');

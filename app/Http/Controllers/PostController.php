@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Post\CommentRequest;
 use App\Http\Requests\Post\RepostRequest;
 use App\Http\Requests\Post\StoreRequest;
+use App\Http\Resources\Comment\CommentResource;
 use App\Http\Resources\Post\PostResource;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Inertia\Response;
 use function Symfony\Component\Translation\t;
 
 class PostController extends Controller
@@ -84,5 +88,22 @@ class PostController extends Controller
             return Redirect::back()->withErrors(['repost' => 'Cant repost your own post']);
 
         Post::create($data);
+    }
+
+    public function comment(CommentRequest $request, Post $post)
+    {
+        $data = $request->validated();
+        $data['post_id'] = $post->id;
+        $data['user_id'] = auth()->id();
+
+        $comment = Comment::create($data);
+
+        return CommentResource::make($comment);
+    }
+
+    public function commentsList(Post $post)
+    {
+        $comments = $post->comments()->latest()->get();
+        return CommentResource::collection($comments);
     }
 }
