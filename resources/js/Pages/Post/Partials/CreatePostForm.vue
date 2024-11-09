@@ -31,7 +31,6 @@ export default {
         },
 
         storeFile(e) {
-            console.log(11111);
             const file = e.target.files[0];
             if (!file) return;
 
@@ -60,12 +59,6 @@ export default {
 
 <template>
     <section>
-        <header>
-            <h2 class="text-lg font-medium text-gray-900">
-                New post
-            </h2>
-        </header>
-
         <form
             @submit.prevent="form.post(route('post.store'),{
                               preserveScroll: true,
@@ -108,10 +101,12 @@ export default {
 
             <div>
                 <InputLabel for="image" value="Image"/>
-                <input @change="storeFile" @click="$event.target.value=''" type="file" name="image" class="hidden" ref="image">
+                <input @change="storeFile" @click="$event.target.value=''" type="file" name="image" class="hidden"
+                       ref="image">
                 <div class="flex">
                     <SecondaryButton @click.prevent="setFile">Load</SecondaryButton>
-                    <SecondaryButton @click.prevent="this.image = null" v-if="image" class="ml-2 !bg-red-500">Cansel</SecondaryButton>
+                    <SecondaryButton @click.prevent="this.image = null" v-if="image" class="ml-2 !bg-red-500">Cansel
+                    </SecondaryButton>
                 </div>
                 <InputError class="mt-2" :message="imageErrors"/>
                 <div v-if="image" class="mt-3">

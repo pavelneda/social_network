@@ -21,7 +21,7 @@ export default {
     <AuthenticatedLayout>
         <template #header>
             <h2
-                    class="text-xl font-semibold leading-tight text-gray-800"
+                class="text-xl font-semibold leading-tight text-gray-800"
             >
                 Create Post
             </h2>
@@ -29,9 +29,13 @@ export default {
         <div class="py-12">
             <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                 <div
-                        class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
+                    class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
                 >
-                    <CreatePostForm class="max-w-xl" />
+
+                    <h2 class="text-lg font-medium text-gray-900">
+                        New post
+                    </h2>
+                    <CreatePostForm class="max-w-xl"/>
                 </div>
             </div>
         </div>

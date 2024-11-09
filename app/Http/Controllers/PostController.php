@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Post\RepostRequest;
 use App\Http\Requests\Post\StoreRequest;
 use App\Http\Resources\Post\PostResource;
 use App\Models\Post;
@@ -73,5 +74,15 @@ class PostController extends Controller
         return $data;
     }
 
+    public function repost(RepostRequest $request, Post $post)
+    {
+        $data = $request->validated();
+        $data['reposted_id'] = $post->id;
+        $data['user_id'] = auth()->id();
 
+        if ($post->user_id == $data['user_id'])
+            return Redirect::back()->withErrors(['repost' => 'Cant repost your own post']);
+
+        Post::create($data);
+    }
 }

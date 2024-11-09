@@ -1,7 +1,7 @@
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {Head} from "@inertiajs/vue3";
-import Post from "@/Components/Post.vue";
+import Post from "@/Pages/Post/Partials/Post.vue";
 
 
 export default {
