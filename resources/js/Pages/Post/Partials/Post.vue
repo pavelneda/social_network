@@ -4,6 +4,7 @@ import RepostForm from "@/Pages/Post/Partials/RepostForm.vue";
 import CommentForm from "@/Pages/Post/Partials/CommentForm.vue";
 import CommentsList from "@/Pages/Post/Partials/CommentsList.vue";
 
+
 export default {
     name: "Post",
     components: {CommentsList, CommentForm, RepostForm},
@@ -16,7 +17,7 @@ export default {
             is_reposted: false,
             openCommentForm: false,
             showComments: false,
-            comments: null,
+            comments: [],
         }
     },
 
@@ -34,25 +35,30 @@ export default {
                 this.is_reposted = !this.is_reposted
         },
 
-        getComments(){
+        getComments() {
             axios.get(route('post.commentsList', {post: this.post.id}))
                 .then(res => {
                     this.comments = res.data.data;
                 })
         },
 
-        getNewComment(comment){
-            console.log(comment);
+        getNewComment(comment) {
+            if (this.comments.length > 0) {
+                this.comments.unshift(comment);
+                this.post.comments_count++;
+            } else this.getComments();
+
             this.showComments = true;
+        },
+
+        toggleShowComments() {
+            this.showComments = !this.showComments;
+            if (this.showComments) this.getComments();
         }
 
     },
 
-    watch: {
-        showComments(newShowComments, oldShowComments) {
-            if (newShowComments) this.getComments();
-        }
-    },
+
 }
 </script>
 
@@ -78,7 +84,7 @@ export default {
                class="ml-auto text-gray-400 text-sm mr-4 cursor-pointer hover:text-sky-500">
                 {{ openCommentForm ? 'Close' : 'Add comment' }}
             </p>
-            <p @click="showComments = !showComments" v-if="post.comments_count > 0"
+            <p @click="toggleShowComments" v-if="post.comments_count > 0"
                class="text-gray-400 text-sm mr-4 cursor-pointer hover:text-sky-500">
                 {{ showComments ? 'Close comments' : 'Show comments' }}
             </p>
@@ -103,8 +109,8 @@ export default {
             </div>
         </div>
         <RepostForm v-if="is_reposted" :post_id="post.id" class="max-w-xl"/>
-        <CommentForm v-if="openCommentForm" :post_id="post.id"/>
-        <CommentsList v-if="comments && showComments" :comments="comments" @getNewComment="getNewComment"/>
+        <CommentForm v-if="openCommentForm" :post_id="post.id" @getNewComment="getNewComment"/>
+        <CommentsList v-if="comments && showComments" :comments="comments"/>
     </div>
 </template>
 

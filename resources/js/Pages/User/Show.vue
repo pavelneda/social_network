@@ -5,7 +5,7 @@ import Post from "@/Pages/Post/Partials/Post.vue";
 
 
 export default {
-    name: "Index",
+    name: "Show",
     components: {
         Post,
         Head, AuthenticatedLayout

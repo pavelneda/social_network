@@ -1,5 +1,4 @@
 <script>
-import {useForm} from "@inertiajs/vue3";
 import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
 
@@ -8,7 +7,6 @@ export default {
     components: {InputError, TextInput},
 
     props: ['post_id'],
-
 
     data() {
         return {
@@ -23,6 +21,7 @@ export default {
             axios.post(route('post.comment', {post: this.post_id}),{ body: this.body })
                 .then(res => {
                     this.comment = res.data.data;
+                    this.body = '';
                     this.sendCommentToParent();
                 })
                 .catch(err => {
