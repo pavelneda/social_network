@@ -24,12 +24,13 @@ class PostController extends Controller
     {
         $posts = Post::where('user_id', auth()->id())->withCount('repostedByPosts')->latest()->get();
         $likedPostsIds = auth()->user()->likedPosts()->pluck('id')->toArray();
+        $stats = auth()->user()->stats();
 
         foreach ($posts as $post) {
             if (in_array($post->id, $likedPostsIds)) $post->is_liked = true;
         }
 
-        return Inertia::render('Post/Index', ['posts' => PostResource::collection($posts)]);
+        return Inertia::render('Post/Index', ['posts' => PostResource::collection($posts), 'stats' => $stats]);
     }
     public function create()
     {

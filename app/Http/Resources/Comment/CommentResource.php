@@ -21,6 +21,7 @@ class CommentResource extends JsonResource
             'post_id' => $this->post_id,
             'user' => $this->user,
             'date' => $this->created_at->diffForHumans(),
+            'parentComment' => $this->parentComment ? CommentResource::make($this->parentComment) : null,
         ];
     }
 }

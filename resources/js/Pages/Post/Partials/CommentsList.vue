@@ -16,9 +16,12 @@ export default {
                 {{ comment.date }}
             </p>
         </div>
-        <p class="text-gray-500 dark:text-gray-400">{{ comment.body }}</p>
+        <p class="text-gray-500 dark:text-gray-400">
+            <span v-if="comment.parentComment" class="text-sky-500">Reply to {{ comment.parentComment.user.name }}:</span>
+            {{ comment.body }}
+        </p>
         <div class="flex items-center mt-4 space-x-4">
-            <button type="button"
+            <button @click.prevent="$emit('getReplyComment', comment)" type="button"
                     class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
                 <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                      viewBox="0 0 20 18">

@@ -29,7 +29,9 @@ class UserController extends Controller
     public function posts(User $user)
     {
         $posts = $this->postsIsLiked($user->posts()->withCount('repostedByPosts')->get());
-        return Inertia::render('User/Show', ['posts' => PostResource::collection($posts), 'userName' => $user->name]);
+        $stats = $user->stats();
+
+        return Inertia::render('User/Show', ['posts' => PostResource::collection($posts), 'userName' => $user->name, 'stats' => $stats]);
     }
 
     public function feed()

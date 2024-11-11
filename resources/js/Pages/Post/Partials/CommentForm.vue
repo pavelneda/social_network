@@ -6,7 +6,7 @@ export default {
     name: "CommentForm",
     components: {InputError, TextInput},
 
-    props: ['post_id'],
+    props: ['post_id', 'replyComment'],
 
     data() {
         return {
@@ -16,9 +16,13 @@ export default {
         }
     },
 
+
     methods: {
-        store(){
-            axios.post(route('post.comment', {post: this.post_id}),{ body: this.body })
+        store() {
+            axios.post(route('post.comment', {post: this.post_id}), {
+                body: this.body,
+                parent_id: this.replyComment ? this.replyComment.id : null
+            })
                 .then(res => {
                     this.comment = res.data.data;
                     this.body = '';
@@ -29,10 +33,12 @@ export default {
                 })
         },
 
-        sendCommentToParent(){
+        sendCommentToParent() {
             this.$emit('getNewComment', this.comment)
-        }
+        },
+
     },
+
 
 }
 </script>
@@ -51,16 +57,22 @@ export default {
                 ></textarea>
                 <InputError v-if="errors && errors.body" v-for="error in errors.body" class="mt-2" :message="error"/>
             </div>
-            <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
+            <div class="flex items-center px-3 py-2 border-t dark:border-gray-600">
                 <button type="submit"
-                        class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
+                        class="inline-flex items-center mr-4 py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
                     Post comment
                 </button>
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
+                <div v-if="replyComment" class="text-sm flex">
+                    <div class="mr-2">
+                        Reply to <span class="text-blue-600">{{ replyComment.user.name }}</span>
+                    </div>
+                    <div @click="$emit('canselReply')" class="text-red-500 cursor-pointer">Cancel</div>
+                </div>
+                <Transition class="ml-auto"
+                            enter-active-class="transition ease-in-out"
+                            enter-from-class="opacity-0"
+                            leave-active-class="transition ease-in-out"
+                            leave-to-class="opacity-0"
                 >
                     <p
                         v-if="comment"

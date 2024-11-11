@@ -3,14 +3,15 @@
 import RepostForm from "@/Pages/Post/Partials/RepostForm.vue";
 import CommentForm from "@/Pages/Post/Partials/CommentForm.vue";
 import CommentsList from "@/Pages/Post/Partials/CommentsList.vue";
+import {Link} from "@inertiajs/vue3";
 
 
 export default {
     name: "Post",
-    components: {CommentsList, CommentForm, RepostForm},
+    components: {CommentsList, CommentForm, RepostForm, Link},
 
     props: ['post', 'auth'],
-    emits: ["getNewComment"],
+    emits: ["getNewComment", "getReplyComment"],
 
     data() {
         return {
@@ -18,6 +19,7 @@ export default {
             openCommentForm: false,
             showComments: false,
             comments: [],
+            replyComment: null,
         }
     },
 
@@ -48,12 +50,22 @@ export default {
                 this.post.comments_count++;
             } else this.getComments();
 
+            this.replyComment = null;
             this.showComments = true;
         },
 
         toggleShowComments() {
             this.showComments = !this.showComments;
             if (this.showComments) this.getComments();
+        },
+
+        getReplyComment(comment) {
+            this.replyComment = comment;
+            this.openCommentForm = true;
+        },
+
+        canselReply() {
+            this.replyComment = null;
         }
 
     },
@@ -74,10 +86,14 @@ export default {
             <img v-if="post.reposted_post.image_url" :src="post.reposted_post.image_url" :alt="post.reposted_post.title"
                  class="mb-6">
             <p class="mb-4">{{ post.reposted_post.content }}</p>
-            <p class="text-sm">{{ post.reposted_post.user.name }}</p>
+            <Link :href="route('user.posts.index', {user: post.reposted_post.user.id})">
+                <span class="text-sm">{{ post.reposted_post.user.name }}</span>
+            </Link>
         </div>
 
-        <p v-if="auth && auth.user.id !== post.user.id" class="text-sm">{{ post.user.name }}</p>
+        <Link :href="route('user.posts.index', {user: post.user.id})">
+            <span v-if="auth && auth.user.id !== post.user.id" class="text-sm">{{ post.user.name }}</span>
+        </Link>
         <div class="flex items-center">
             <p class="text-gray-400 text-sm ">{{ post.date }}</p>
             <p @click="openCommentForm = !openCommentForm"
@@ -109,8 +125,9 @@ export default {
             </div>
         </div>
         <RepostForm v-if="is_reposted" :post_id="post.id" class="max-w-xl"/>
-        <CommentForm v-if="openCommentForm" :post_id="post.id" @getNewComment="getNewComment"/>
-        <CommentsList v-if="comments && showComments" :comments="comments"/>
+        <CommentForm v-if="openCommentForm" :post_id="post.id" :replyComment="replyComment"
+                     @getNewComment="getNewComment" @canselReply="canselReply"/>
+        <CommentsList v-if="comments && showComments" :comments="comments" @getReplyComment="getReplyComment"/>
     </div>
 </template>
 

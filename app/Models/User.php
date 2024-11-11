@@ -56,8 +56,26 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'subscriber_followings', 'subscriber_id', 'following_id');
     }
 
+    public function subscribers()
+    {
+        return $this->belongsToMany(User::class, 'subscriber_followings', 'following_id', 'subscriber_id');
+    }
+
     public function likedPosts()
     {
         return $this->belongsToMany(Post::class, 'liked_posts', 'user_id', 'post_id');
     }
+
+    public function stats()
+    {
+        $stats = [];
+        $postsIds = $this->posts()->pluck('id')->toArray();
+        $stats['followings_count'] = $this->followings()->count();
+        $stats['subscribers_count'] = $this->subscribers()->count();
+        $stats['likes_count'] = LikedPost::whereIn('post_id', $postsIds)->count();
+        $stats['posts_count'] = count($postsIds);
+
+        return $stats;
+    }
+
 }
