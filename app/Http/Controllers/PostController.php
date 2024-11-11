@@ -22,8 +22,8 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = Post::where('user_id', auth()->id())->latest()->get();
-        $likedPostsIds = auth()->user()->likedPosts()->pluck('post_id')->toArray();
+        $posts = Post::where('user_id', auth()->id())->withCount('repostedByPosts')->latest()->get();
+        $likedPostsIds = auth()->user()->likedPosts()->pluck('id')->toArray();
 
         foreach ($posts as $post) {
             if (in_array($post->id, $likedPostsIds)) $post->is_liked = true;

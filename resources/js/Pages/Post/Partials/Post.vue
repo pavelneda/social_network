@@ -99,7 +99,7 @@ export default {
                 </svg>
             </div>
             <div class="flex items-center ml-3">
-                <p class="text-gray-400 text-sm mr-3">0</p>
+                <p class="text-gray-400 text-sm mr-3">{{ post.reposted_by_posts_count }}</p>
                 <svg @click="toggleRepostForm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke-width="1.5" stroke="currentColor"
                      :class="['size-6 cursor-pointer hover:stroke-sky-500', is_reposted ? 'stroke-sky-500' : '']">

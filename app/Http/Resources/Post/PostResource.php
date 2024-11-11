@@ -25,6 +25,7 @@ class PostResource extends JsonResource
             'likes_count' => $this->likedUsers()->count(),
             'reposted_post' => RepostResource::make($this->repostedPost),
             'comments_count' => $this->comments_count,
+            'reposted_by_posts_count' => $this->reposted_by_posts_count ?? null,
         ];
     }
 }

@@ -28,17 +28,18 @@ class UserController extends Controller
 
     public function posts(User $user)
     {
-        $posts = $this->postsIsLiked($user->posts);
+        $posts = $this->postsIsLiked($user->posts()->withCount('repostedByPosts')->get());
         return Inertia::render('User/Show', ['posts' => PostResource::collection($posts), 'userName' => $user->name]);
     }
 
     public function feed()
     {
+
         $followingsIds = auth()->user()->followings()->pluck('following_id')->toArray();
-        $likedPostsIds = auth()->user()->likedPosts()->pluck('post_id')->toArray();
+        $likedPostsIds = auth()->user()->likedPosts()->pluck('id')->toArray();
 
         $posts = Post::whereIn('user_id', $followingsIds)
-            ->whereNotIn('id', $likedPostsIds)->latest()->get();
+            ->whereNotIn('id', $likedPostsIds)->withCount('repostedByPosts')->latest()->get();
 
         return Inertia::render('User/Feed', ['posts' => PostResource::collection($posts)]);
     }
@@ -53,7 +54,8 @@ class UserController extends Controller
 
     private function postsIsLiked($posts)
     {
-        $likedPostsIds = auth()->user()->likedPosts()->pluck('post_id')->toArray();
+
+        $likedPostsIds = auth()->user()->likedPosts()->pluck('id')->toArray();
 
         foreach ($posts as $post) {
             if (in_array($post->id, $likedPostsIds)) $post->is_liked = true;
